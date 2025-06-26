@@ -1,6 +1,7 @@
 /* 
  * https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messagebox
  * needs user32.lib for compilation, ie: cl win32_message_box.cpp user32.lib
+ * https://youtu.be/Ee3EtYb8d1o?si=EPSUWc_-aluXmT0c&t=3540
  */
 #include <windows.h>
 
