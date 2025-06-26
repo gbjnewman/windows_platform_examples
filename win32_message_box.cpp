@@ -11,7 +11,7 @@ WinMain(HINSTANCE hInstance,
 	int nCmdShow)
 {
 	MessageBox(0, "This is the Message", "This is the title",
-		   MB_OK | MB_ICONINFORMATION);
+		   MB_OK | MB_ICONINFORMATION); // message box options flags
 
 	return(0);
 }
