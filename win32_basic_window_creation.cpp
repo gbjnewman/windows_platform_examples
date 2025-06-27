@@ -1,42 +1,50 @@
 #include <windows.h>
 
+/* vvv https://youtu.be/4ROiWonnWGk?si=Eq7hJHUh7uLoB90K&t=1304 */
 LRESULT CALLBACK
-Win32MainWindowCallback(HWND Window,
-						UINT Message,
-						WPARAM WParam,
-						LPARAM LParam)
+MainWindowCallback(	HWND hwnd,
+					UINT uMsg,
+					WPARAM wParam,
+					LPARAM lParam)
 {
 	LRESULT Result = 0;
 
-	switch(Message)
+	/* vvv https://youtu.be/4ROiWonnWGk?si=zSr8pAbFO1XSdXhE&t=1477 */
+	switch(uMsg)
 	{
 
 		case WM_SIZE:
 		{
-		} break;
-
-		case WM_CLOSE:
-		{
-		} break;
-
-		case WM_ACTIVATEAPP:
-		{
+			OutputDebugStringA("WM_SIZE\n");
 		} break;
 
 		case WM_DESTROY:
 		{
+			OutputDebugStringA("WM_DESTROY\n");
+		} break;
+
+		case WM_CLOSE:
+		{
+			OutputDebugStringA("WM_CLOSE\n");
+		} break;
+
+		case WM_ACTIVATEAPP:
+		{
+			OutputDebugStringA("WM_ACTIVATEAPP\n");
 		} break;
 
 		case WM_PAINT:
 		{
+			OutputDebugStringA("WM_PAINT\n");
 		} break;
 
-		default :
+		/* vvv https://youtu.be/4ROiWonnWGk?si=h1ZA5NwAo5Ux4KEP&t=1838 */
+		default:
 		{
-			Result = DefWindowProc(	Window,
-									Message,
-									WParam,
-									LParam);
+			Result = DefWindowProc(	hwnd,
+									uMsg,
+									wParam,
+									lParam);
 		} break;
 	}
 
@@ -60,8 +68,9 @@ WinMain(HINSTANCE hInstance,
 	WNDCLASS WindowClass = {};
 
 	/* vvv https://youtu.be/4ROiWonnWGk?si=Qf2dO9mtxbIDKxDG&t=993 */
-	WindowClass.style;
-	WindowClass.lpfnWndProc = Win32MainWindowCallback;
+	WindowClass.style = CS_OWNDC|CS_HREDRAW|CS_VREDRAW;
+	/* vvv https://youtu.be/4ROiWonnWGk?si=JYJ_nGNNEjWlrlsS&t=1274 */
+	WindowClass.lpfnWndProc = MainWindowCallback;
 	//WindowClass.cbClsExtra;
 	//WindowClass.cbWndExtra;
 	/* vvv https://youtu.be/4ROiWonnWGk?si=dhLFqqhGgYQ0HuyS&t=882/ */
@@ -72,6 +81,7 @@ WinMain(HINSTANCE hInstance,
 	//WindowClass.lpszMenuName;
 	WindowClass.lpszClassName = "ANameForTheWindowClass";
 
+	/* https://youtu.be/4ROiWonnWGk?si=gs990BE36ZkYjvVo&t=2135 */
 	if(RegisterClass(&WindowClass))
 	{
 		//casey create window explanation
@@ -79,7 +89,7 @@ WinMain(HINSTANCE hInstance,
 		HWND WindowHandle = CreateWindowExA(
 			0,									//DWORD dwExStyle
 			WindowClass.lpszClassName,			//LPCTSTR lpClassName
-			"Handmade Hero",					//LPCTSTR lpWindowName
+			"A window name",					//LPCTSTR lpWindowName
 			WS_OVERLAPPEDWINDOW|WS_VISIBLE,		//DWORD dwStyle
 			CW_USEDEFAULT,						//int x
 			CW_USEDEFAULT,						//int y
