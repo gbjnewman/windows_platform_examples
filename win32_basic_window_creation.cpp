@@ -59,16 +59,18 @@ WinMain(HINSTANCE hInstance,
 	// https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-wndclassa
 	WNDCLASS WindowClass = {};
 
-	//WindowClass.style;
+	/* vvv https://youtu.be/4ROiWonnWGk?si=Qf2dO9mtxbIDKxDG&t=993 */
+	WindowClass.style;
 	WindowClass.lpfnWndProc = Win32MainWindowCallback;
 	//WindowClass.cbClsExtra;
 	//WindowClass.cbWndExtra;
-	WindowClass.hInstance = hInstance;
+	/* vvv https://youtu.be/4ROiWonnWGk?si=dhLFqqhGgYQ0HuyS&t=882/ */
+	WindowClass.hInstance = hInstance; // or GetModuleHandle(0);
 	//WindowClass.hIcon;
 	//WindowClass.hCursor;
 	//WindowClass.hbrBackground;
 	//WindowClass.lpszMenuName;
-	WindowClass.lpszClassName = "HandmadeHeroWindowClass";
+	WindowClass.lpszClassName = "ANameForTheWindowClass";
 
 	if(RegisterClass(&WindowClass))
 	{
