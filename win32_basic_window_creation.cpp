@@ -54,8 +54,8 @@ WinMain(HINSTANCE hInstance,
 	// casey's explaination of how to open a window in windows
 	// https://youtu.be/4ROiWonnWGk?si=voZuPeSIwZlMzviy&t=179
 
-	// WNDCLASS is a struct, here it's members are being initialised
-	// with all zeros https://youtu.be/4ROiWonnWGk?si=jPsLze0-AGLYj0rQ&t=579
+	// WNDCLASS is a struct, it's members are being initialised
+	// with zeros here. https://youtu.be/4ROiWonnWGk?si=jPsLze0-AGLYj0rQ&t=579
 	// https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-wndclassa
 	WNDCLASS WindowClass = {};
 
