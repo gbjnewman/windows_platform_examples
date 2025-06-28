@@ -1,5 +1,15 @@
 #include <windows.h>
 
+/* https://youtu.be/GAi_nTx1zG8?si=N49yu5rWUBhu9x9a&t=1182 */
+#define internal_function static 
+/* https://youtu.be/GAi_nTx1zG8?si=ZfEdC6daYdRzcY7w&t=1078 */
+#define local_persist static 
+#define global_variable static 
+
+/* https://youtu.be/GAi_nTx1zG8?si=CA0DppVGPG7d_tJH&t=833 */
+/* https://youtu.be/GAi_nTx1zG8?si=HRn5QW0-FgsfUTcB&t=1236 */
+global_variable bool Running;
+
 /* vvv https://youtu.be/4ROiWonnWGk?si=Eq7hJHUh7uLoB90K&t=1304 */
 LRESULT CALLBACK
 MainWindowCallback(	HWND hwnd,
@@ -13,10 +23,6 @@ MainWindowCallback(	HWND hwnd,
 	switch(uMsg)
 	{
 
-		/* commented out so x closes the window(becasue the close message hasn't
-		 * been handled properly here)
-		 * https://youtu.be/d003_D-9EnY?si=PJ3C-_vLFscsB4Gk&t=1125 */
-#if 0
 		case WM_SIZE:
 		{
 			OutputDebugStringA("WM_SIZE\n");
@@ -24,20 +30,19 @@ MainWindowCallback(	HWND hwnd,
 
 		case WM_CLOSE:
 		{
-			OutputDebugStringA("WM_CLOSE\n");
+			/* https://youtu.be/GAi_nTx1zG8?si=Ebzo66opMiq9reSy&t=850 */
+			Running = false;
 		} break;
 
 		case WM_ACTIVATEAPP:
 		{
 			OutputDebugStringA("WM_ACTIVATEAPP\n");
 		} break;
-#endif
 
-		/* https://youtu.be/d003_D-9EnY?si=u87h-Jq-_flj8lYL&t=1162 */
 		case WM_DESTROY:
 		{
-			PostQuitMessage(0);
-			OutputDebugStringA("WM_DESTROY\n");
+			/* https://youtu.be/GAi_nTx1zG8?si=MrSn_fs3WMpkNUh1&t=858 */
+			Running = false;
 		} break;
 
 		/* https://youtu.be/4ROiWonnWGk?si=b18VbjZjH_qZJvoe&t=3052 */
@@ -53,6 +58,7 @@ MainWindowCallback(	HWND hwnd,
 			int Y = Paint.rcPaint.top;
 			int Width = Paint.rcPaint.right - Paint.rcPaint.left;
 			int Height = Paint.rcPaint.bottom - Paint.rcPaint.top;
+			local_persist DWORD Operation = BLACKNESS;
 			/* https://youtu.be/4ROiWonnWGk?si=yNO39Jw5lfVyuDtn&t=3176
 			 * https://youtu.be/4ROiWonnWGk?si=laGlyp_DIacl7rj5&t=3300
 			 * PatBlt needs Gdi32.lib */
@@ -61,7 +67,7 @@ MainWindowCallback(	HWND hwnd,
 					Y,				//_in_ int nYLeft
 					Width,			//_in_ nWidth
 					Height,			//_in_ nHeight
-					BLACKNESS);		//_in_ DWORD dwRop
+					Operation);		//_in_ DWORD dwRop
 			/* https://youtu.be/4ROiWonnWGk?si=hgJBeZVCJgYT0VHa&t=3126 */
 			EndPaint(	hwnd,		//_In_ HWND hWnd
 						&Paint);	//_In_ const PAINTSTRUCT *lpPaint
@@ -135,8 +141,10 @@ WinMain(HINSTANCE hInstance,
 		/* vvv https://youtu.be/4ROiWonnWGk?si=tKcq71cy18bp6ZA1&t=2568 */
 		if(WindowHandle)
 		{
-			/* vvv https://youtu.be/4ROiWonnWGk?si=9uNndbY7MNHBjIt5&t=2618 */
-			for(;;)
+			/* https://youtu.be/GAi_nTx1zG8?si=7i6u2-w0waOGF-wv&t=1061 */
+			Running = true;
+			/* https://youtu.be/GAi_nTx1zG8?si=y03DwoiZD-VAObHs&t=818 */
+			while(Running)
 			{
 				MSG Message;
 			/* vvv https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getmessage */
