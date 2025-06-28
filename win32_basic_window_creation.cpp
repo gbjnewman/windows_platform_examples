@@ -16,7 +16,6 @@ MainWindowCallback(	HWND hwnd,
 		/* commented out so x closes the window(becasue the close message hasn't
 		 * been handled properly here)
 		 * https://youtu.be/d003_D-9EnY?si=PJ3C-_vLFscsB4Gk&t=1125 */
-#if 0
 		case WM_SIZE:
 		{
 			OutputDebugStringA("WM_SIZE\n");
@@ -31,7 +30,6 @@ MainWindowCallback(	HWND hwnd,
 		{
 			OutputDebugStringA("WM_ACTIVATEAPP\n");
 		} break;
-#endif
 
 		/* https://youtu.be/d003_D-9EnY?si=u87h-Jq-_flj8lYL&t=1162 */
 		case WM_DESTROY:

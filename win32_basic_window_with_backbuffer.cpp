@@ -9,13 +9,77 @@
 /* https://youtu.be/GAi_nTx1zG8?si=CA0DppVGPG7d_tJH&t=833 */
 /* https://youtu.be/GAi_nTx1zG8?si=HRn5QW0-FgsfUTcB&t=1236 */
 global_variable bool Running;
+global_variable BITMAPINFO BitmapInfo;
+global_variable void *BitmapMemory;
+global_variable HBITMAP BitmapHandle;
+global_variable HDC BitmapDeviceContext;
 
+/* https://youtu.be/GAi_nTx1zG8?si=CcB70WFrqiPPTfqM&t=1416
+ * DIB means device independant bitmap */
+internal_function void
+Win32ResizeDIBSection(int Width, int Height)
+{
+	/* https://youtu.be/GAi_nTx1zG8?si=G9vO8cEmlbxR4z_7&t=3080 */
+	if(BitmapHandle)
+	{
+		/* https://youtu.be/GAi_nTx1zG8?si=9virVjKHqwdJvk4F&t=3149 */
+		DeleteObject(BitmapHandle);
+	}
+	if(!BitmapDeviceContext)
+	{
+		BitmapDeviceContext = CreateCompatibleDC(0);
+	}
+
+	/* https://youtu.be/GAi_nTx1zG8?si=4iwGvX-xzNnm_XbF&t=2477 */
+	BitmapInfo.bmiHeader.biSize = sizeof(BitmapInfo.bmiHeader);
+	BitmapInfo.bmiHeader.biWidth = Width;
+	BitmapInfo.bmiHeader.biHeight = Height;
+	BitmapInfo.bmiHeader.biPlanes = 1;
+	BitmapInfo.bmiHeader.biBitCount = 32;
+	BitmapInfo.bmiHeader.biCompression = BI_RGB;
+
+	/* https://youtu.be/GAi_nTx1zG8?si=hHKLswfckdPCydYY&t=2334 */
+	BitmapHandle = CreateDIBSection(
+				BitmapDeviceContext,//[in]  HDC              hdc,
+				&BitmapInfo,		//[in]  const BITMAPINFO *pbmi,
+				DIB_RGB_COLORS,		//[in]  UINT             usage,
+				/* https://youtu.be/GAi_nTx1zG8?si=bru4uZGMNSst-A6M&t=2417 */
+				&BitmapMemory,		//[out] VOID             **ppvBits,
+				0,					//[in]  HANDLE           hSection,
+				0);					//[in]  DWORD            offset
+
+}
+
+/* https://youtu.be/GAi_nTx1zG8?si=v8CEBbIFQk9YxCbf&t=1803 */
+internal_function void
+Win32UpdateWindow(HDC DeviceContext, int X, int Y, int Width, int Height)
+{
+	/* https://youtu.be/GAi_nTx1zG8?si=XRQXVptVJ08V4dsc&t=1926 */
+	/* https://youtu.be/GAi_nTx1zG8?si=ZdWdKmWLk64y2S43&t=2015 */
+	StretchDIBits(
+			DeviceContext,	//HDC              hdc,        [in]
+			X,				//int              xDest,      [in]
+			Y,				//int              yDest,      [in]
+			Width,			//int              DestWidth,  [in]
+			Height,			//int              DestHeight, [in]
+			X,				//int              xSrc,       [in]
+			Y,				//int              ySrc,       [in]
+			Width,			//int              SrcWidth,   [in]
+			Height,			//int              SrcHeight,  [in]
+			BitmapMemory,	//const VOID       *lpBits,    [in]
+			&BitmapInfo,	//const BITMAPINFO *lpbmi,     [in]
+			/* https://youtu.be/GAi_nTx1zG8?si=6hUCpHlfGr1rj49k&t=2092 */
+			DIB_RGB_COLORS,	//UINT             iUsage,     [in]
+			/* https://youtu.be/GAi_nTx1zG8?si=LBafSzE7PDo7l0Vw&t=2253 */
+			SRCCOPY);		//DWORD            rop         [in]
+
+}
 /* vvv https://youtu.be/4ROiWonnWGk?si=Eq7hJHUh7uLoB90K&t=1304 */
 LRESULT CALLBACK
-MainWindowCallback(	HWND hwnd,
-					UINT uMsg,
-					WPARAM wParam,
-					LPARAM lParam)
+Win32MainWindowCallback(HWND hwnd, //Window
+						UINT uMsg,
+						WPARAM wParam,
+						LPARAM lParam)
 {
 	LRESULT Result = 0;
 
@@ -25,6 +89,17 @@ MainWindowCallback(	HWND hwnd,
 
 		case WM_SIZE:
 		{
+			/* https://youtu.be/GAi_nTx1zG8?si=YSPfqwD-Wh1PlorY&t=1508 */
+			/* https://youtu.be/GAi_nTx1zG8?si=7HHnRaTUltHQtw8d&t=1548 */
+			RECT ClientRect;
+			GetClientRect(
+					hwnd,			//_In_ HWNDhWnd
+					&ClientRect);	//_Out_ LPRECT lpRect
+			/* https://youtu.be/GAi_nTx1zG8?si=AD5E-cioNNh--H08&t=1623 */
+			int Width = ClientRect.right - ClientRect.left;
+			int Height = ClientRect.bottom - ClientRect.top;
+			/* https://youtu.be/GAi_nTx1zG8?si=Y8MUCBSdv73ydnef&t=1447 */
+			Win32ResizeDIBSection(Height, Width);
 			OutputDebugStringA("WM_SIZE\n");
 		} break;
 
@@ -58,16 +133,8 @@ MainWindowCallback(	HWND hwnd,
 			int Y = Paint.rcPaint.top;
 			int Width = Paint.rcPaint.right - Paint.rcPaint.left;
 			int Height = Paint.rcPaint.bottom - Paint.rcPaint.top;
-			local_persist DWORD Operation = BLACKNESS;
-			/* https://youtu.be/4ROiWonnWGk?si=yNO39Jw5lfVyuDtn&t=3176
-			 * https://youtu.be/4ROiWonnWGk?si=laGlyp_DIacl7rj5&t=3300
-			 * PatBlt needs Gdi32.lib */
-			PatBlt(	DeviceContext,	//_in_ HDC hdc
-					X,				//_in_ int nXLeft
-					Y,				//_in_ int nYLeft
-					Width,			//_in_ nWidth
-					Height,			//_in_ nHeight
-					Operation);		//_in_ DWORD dwRop
+			/* https://youtu.be/GAi_nTx1zG8?si=QLmuWnIPGu6aEP-0&t=1760 */
+			Win32UpdateWindow(DeviceContext, X, Y, Width, Height);
 			/* https://youtu.be/4ROiWonnWGk?si=hgJBeZVCJgYT0VHa&t=3126 */
 			EndPaint(	hwnd,		//_In_ HWND hWnd
 						&Paint);	//_In_ const PAINTSTRUCT *lpPaint
@@ -107,7 +174,7 @@ WinMain(HINSTANCE hInstance,
 	 * vvv style was not needed, see ^^^ */
 	//WindowClass.style = CS_OWNDC|CS_HREDRAW|CS_VREDRAW;
 	/* https://youtu.be/4ROiWonnWGk?si=JYJ_nGNNEjWlrlsS&t=1274 */
-	WindowClass.lpfnWndProc = MainWindowCallback;
+	WindowClass.lpfnWndProc = Win32MainWindowCallback;
 	//WindowClass.cbClsExtra;
 	//WindowClass.cbWndExtra;
 	/* vvv https://youtu.be/4ROiWonnWGk?si=dhLFqqhGgYQ0HuyS&t=882/ */
